@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">ShopIt</string>
+    <string name="listMenuText">Lists</string>
+    <string name="historyMenuText">History</string>
+    <string name="profileMenuText">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="placeholder"><![CDATA[<Placeholder>]]></string>
+    <string name="addListButtonText">Add List</string>
+</resources>
