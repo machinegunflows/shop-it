@@ -15,6 +15,8 @@ import java.util.Arrays;
 
 import de.samuelhuebner.shopit.R;
 import de.samuelhuebner.shopit.database.Database;
+import de.samuelhuebner.shopit.database.ShoppingItem;
+import de.samuelhuebner.shopit.database.ShoppingList;
 
 public class ShoppingListAdapter extends ArrayAdapter<String> {
     private Database db;
@@ -29,7 +31,7 @@ public class ShoppingListAdapter extends ArrayAdapter<String> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        String name = db.getShoppingListsNames().get(position);
+        ShoppingList list = db.getShoppingLists()[position];
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -37,7 +39,17 @@ public class ShoppingListAdapter extends ArrayAdapter<String> {
         }
 
         TextView listName = convertView.findViewById(R.id.shoppingListsName);
-        listName.setText(name);
+        listName.setText(list.getName());
+
+        if (list.isComplete()) {
+            ImageView imageView = convertView.findViewById(R.id.isCompletedIcon);
+            imageView.setImageResource(R.drawable.ic_done_black_24dp);
+            imageView.setVisibility(View.VISIBLE);
+        } else {
+            String s = "" + list.getCompleted() + "/" + list.getItemCount();
+            TextView statusText = convertView.findViewById(R.id.statusCompleted);
+            statusText.setText(s);
+        }
 
         return convertView;
     }

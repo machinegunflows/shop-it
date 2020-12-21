@@ -31,4 +31,27 @@ public class ShoppingList {
     public String getUuid() { return uuid; }
 
     public String getName() { return name; }
+
+    /**
+     * Gets the count of completed positions
+     *
+     * @return      The count of completed positions;
+     */
+    public int getCompleted() {
+        int count = 0;
+        for (ListPosition pos : positions) {
+            if (!pos.isCompleted()) continue;
+
+            count++;
+        }
+        return count;
+    }
+
+    public int getItemCount() {
+        return positions.size();
+    }
+
+    public boolean isComplete() {
+        return isComplete;
+    }
 }
