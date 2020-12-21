@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -96,6 +97,11 @@ public class ShoppingListsFragment extends Fragment {
         this.adapter.notifyDataSetChanged();
     }
 
+    /**
+     * Event handler that handles the creation of a new list
+     *
+     * @param view      The requesting view
+     */
     public void handleCreateListEvent(View view) {
         Intent newListIntent = new Intent(getActivity(), CreateListActivity.class);
         startActivityForResult(newListIntent, 800);
@@ -104,9 +110,23 @@ public class ShoppingListsFragment extends Fragment {
     /**
      * Method which sets up the list view for all shopping lists
      *
-     * @param view      The ListView which has to be setup
+     * @param listView      The ListView which has to be setup
      */
-    private void setupListView(ListView view) {
-        view.setAdapter(this.adapter);
+    private void setupListView(ListView listView) {
+        listView.setAdapter(this.adapter);
+
+        listView.setOnItemClickListener((adapterView, view, i, l) -> {
+            this.handleListInteractionEvent(adapterView, i);
+        });
+    }
+
+    public void handleListInteractionEvent(AdapterView<?> adapterView, int pos) {
+        MainActivity main = (MainActivity)getActivity();
+
+        if (main == null) return;
+
+        main.setSingleListMode(true);
+        Fragment f = main.createNewSingleListFragment(db.getShoppingLists()[pos].getUuid());
+        main.setCurrentFragment(f);
     }
 }
