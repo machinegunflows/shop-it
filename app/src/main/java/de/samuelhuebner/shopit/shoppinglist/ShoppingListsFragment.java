@@ -1,5 +1,6 @@
 package de.samuelhuebner.shopit.shoppinglist;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -16,6 +17,8 @@ import android.widget.ListView;
 
 import de.samuelhuebner.shopit.MainActivity;
 import de.samuelhuebner.shopit.R;
+import de.samuelhuebner.shopit.adapter.ShoppingListAdapter;
+import de.samuelhuebner.shopit.database.Database;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +35,10 @@ public class ShoppingListsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    // private variables
+    private Database db;
+    private ShoppingListAdapter adapter;
 
     public ShoppingListsFragment() {
         // Required empty public constructor
@@ -62,6 +69,9 @@ public class ShoppingListsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        this.db = new Database(getContext());
+        this.adapter = new ShoppingListAdapter(getContext(), R.layout.shopping_lists_item, db);
     }
 
     @Override
@@ -79,6 +89,11 @@ public class ShoppingListsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (!(requestCode == 800)) return;
+        if (!(resultCode == Activity.RESULT_OK)) return;
+
+        this.adapter.notifyDataSetChanged();
     }
 
     public void handleCreateListEvent(View view) {
@@ -92,7 +107,6 @@ public class ShoppingListsFragment extends Fragment {
      * @param view      The ListView which has to be setup
      */
     private void setupListView(ListView view) {
-        String[] tmpData = { "Wishlist", "Testing", "DIY Project" };
-        view.setAdapter(new ArrayAdapter<>(getContext(), R.layout.shopping_lists_item, R.id.shoppingListsName, tmpData));
+        view.setAdapter(this.adapter);
     }
 }

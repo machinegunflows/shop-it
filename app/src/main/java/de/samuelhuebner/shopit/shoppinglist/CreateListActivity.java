@@ -14,15 +14,19 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 
 import de.samuelhuebner.shopit.R;
+import de.samuelhuebner.shopit.database.Database;
+import de.samuelhuebner.shopit.database.ShoppingList;
 
 public class CreateListActivity extends AppCompatActivity {
-
     private TextView newListName;
+    private Database db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_list);
+
+        this.db = new Database(this);
 
         newListName = findViewById(R.id.listNameInput);
         newListName.requestFocus();
@@ -47,7 +51,11 @@ public class CreateListActivity extends AppCompatActivity {
             return;
         }
 
-        result.putExtra("LIST_NAME", name);
+        // creates the new list
+        ShoppingList list = db.createShoppingList(name);
+
+        // puts the UUID as a result (in case its needed)
+        result.putExtra("LIST_UUID", list.getUuid());
 
         // hides the keyboard when the value was saved
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
