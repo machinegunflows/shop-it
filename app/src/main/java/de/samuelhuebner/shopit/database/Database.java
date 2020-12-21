@@ -41,7 +41,7 @@ public class Database {
      * @return
      */
     public ShoppingList[] getShoppingLists() {
-        String[] keys = (String[]) map.keySet().toArray();
+        String[] keys = map.keySet().toArray(new String[0]);
 
         ShoppingList[] shoppingLists = new ShoppingList[keys.length];
 
