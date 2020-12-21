@@ -14,12 +14,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import de.samuelhuebner.shopit.history.HistoryFragment;
 import de.samuelhuebner.shopit.profile.ProfileFragment;
+import de.samuelhuebner.shopit.shoppinglist.ShoppingListFragment;
 import de.samuelhuebner.shopit.shoppinglist.ShoppingListsFragment;
 
 public class MainActivity extends AppCompatActivity {
     private ShoppingListsFragment lists;
     private ProfileFragment profile;
     private HistoryFragment history;
+    private ShoppingListFragment list;
+
+    private boolean singleListMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
      * Helper method which replaces the current fragment with the given one
      * @param fragment  The new fragment that has to be visible
      */
-    private void setCurrentFragment(@NonNull Fragment fragment) {
+    public void setCurrentFragment(@NonNull Fragment fragment) {
         getSupportFragmentManager().beginTransaction().replace(R.id.viewFragment, fragment).commit();
     }
 
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         this.lists = new ShoppingListsFragment();
         this.profile = new ProfileFragment();
         this.history = new HistoryFragment();
+        this.list = new ShoppingListFragment();
 
         setCurrentFragment(lists);
 
@@ -65,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnNavigationItemSelectedListener((BottomNavigationView.OnNavigationItemSelectedListener) item -> {
             switch (item.getItemId()) {
                 case R.id.listViewMenuItem:
+                    if (singleListMode) {
+                        setCurrentFragment(list);
+                        break;
+                    }
+
                     setCurrentFragment(lists);
                     break;
                 case R.id.historyViewMenuItem:
@@ -80,5 +90,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void handleCreateListEvent(View view) {
         this.lists.handleCreateListEvent(view);
+    }
+
+
+    public Fragment createNewSingleListFragment(String uuid) {
+        this.list = ShoppingListFragment.newInstance(uuid);
+        return this.list;
+    }
+
+    public void setSingleListMode(boolean singleListMode) {
+        this.singleListMode = singleListMode;
     }
 }
