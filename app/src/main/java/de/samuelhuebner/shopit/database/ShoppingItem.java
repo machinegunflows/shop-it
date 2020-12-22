@@ -1,6 +1,7 @@
 package de.samuelhuebner.shopit.database;
 
 public class ShoppingItem {
+    private String category;
     private String itemName;
     private String itemUrl;
     private String notes;
@@ -17,6 +18,15 @@ public class ShoppingItem {
         this.itemUrl = "";
         this.notes = "";
         this.price = -1.0;
+    }
+
+    public ShoppingItem(String itemName, Category category) {
+        this.itemName = itemName;
+        this.itemUrl = "";
+        this.notes = "";
+        this.price = -1.0;
+
+        if (category != null) this.category = category.toString();
     }
 
     public ShoppingItem() {
@@ -38,6 +48,10 @@ public class ShoppingItem {
         this.itemUrl = itemUrl;
     }
 
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public void setPrice(Double price) {
         this.price = price;
     }
@@ -54,14 +68,19 @@ public class ShoppingItem {
         return itemUrl;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
     public String getNotes() {
         return notes;
     }
 
     @Override
     public String toString() {
-        return "ListItem{" +
-                "itemName='" + itemName + '\'' +
+        return "ShoppingItem{" +
+                "category='" + category + '\'' +
+                ", itemName='" + itemName + '\'' +
                 ", itemUrl='" + itemUrl + '\'' +
                 ", notes='" + notes + '\'' +
                 ", price=" + price +
