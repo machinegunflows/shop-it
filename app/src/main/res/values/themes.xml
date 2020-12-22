@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.ShopIt" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">#417852</item>
+        <item name="colorPrimaryVariant">#4a8a5e</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -12,13 +12,14 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-
         <item name="android:textColorPrimary">@android:color/black</item>
         <item name="android:textColorSecondary">@android:color/black</item>
     </style>
 
     <!-- ToolBar -->
     <style name="ToolBarStyle" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="backgroundColor">#4a8a5e</item>
+        <item name="android:colorPrimary">#4a8a5e</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="actionMenuTextColor">@android:color/white</item>
