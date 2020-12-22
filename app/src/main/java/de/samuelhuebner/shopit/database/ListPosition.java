@@ -3,6 +3,7 @@ package de.samuelhuebner.shopit.database;
 public class ListPosition {
     private String name;
     private ShoppingItem shoppingItem;
+    private String category;
     private boolean isCompleted;
     private int count;
 
@@ -15,6 +16,7 @@ public class ListPosition {
         else this.count = count;
 
         this.isCompleted = false;
+        this.category = shoppingItem.getCategory();
     }
 
     public int getCount() {
@@ -39,5 +41,9 @@ public class ListPosition {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public String getCategory() {
+        return (category == null) ? "no-category" : category;
     }
 }

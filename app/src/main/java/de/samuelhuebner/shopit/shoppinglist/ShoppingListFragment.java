@@ -1,15 +1,36 @@
 package de.samuelhuebner.shopit.shoppinglist;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toolbar;
+
+import java.util.ArrayList;
 
 import de.samuelhuebner.shopit.R;
+import de.samuelhuebner.shopit.adapter.ListPositionAdapter;
+import de.samuelhuebner.shopit.database.Category;
+import de.samuelhuebner.shopit.database.Database;
+import de.samuelhuebner.shopit.database.ListPosition;
+import de.samuelhuebner.shopit.database.ShoppingItem;
+import de.samuelhuebner.shopit.database.ShoppingList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,11 +38,20 @@ import de.samuelhuebner.shopit.R;
  * create an instance of this fragment.
  */
 public class ShoppingListFragment extends Fragment {
-
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String LIST_UUID = "LIST_UUID";
 
     private String listUUID;
+    private Database db;
+    private ShoppingList list;
+
+    private ConstraintLayout layout;
+    private CardView cardView;
+    private RecyclerView recyclerView;
+
+    private ListPositionAdapter adapter;
+
+    private Context context;
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -47,16 +77,112 @@ public class ShoppingListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.db = new Database(getContext());
         if (getArguments() != null) {
             listUUID = getArguments().getString(LIST_UUID);
             Log.d("Fragment:", listUUID);
+
+            list = db.getShoppingList(listUUID);
         }
+
+        this.adapter = new ListPositionAdapter(list.getPositions());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_shopping_list, container, false);
+        View newView = inflater.inflate(R.layout.fragment_shopping_list, container, false);
+
+        this.context = newView.getContext();
+
+        setupView(newView);
+        setupSpinner(newView);
+        return newView;
+    }
+
+    private void setupSpinner(View view) {
+        Spinner spinner = view.findViewById(R.id.categorySpinner);
+        ArrayList<String> categories = new ArrayList<>();
+        categories.add("no-category");
+
+        Object[] tmp = Category.values();
+        for (Object o : tmp) {
+            categories.add(o.toString().toLowerCase());
+        }
+
+        spinner.setAdapter(new ArrayAdapter<>(context, R.layout.support_simple_spinner_dropdown_item, categories));
+    }
+
+    /**
+     * Sets up the ShoppingListFragment view
+     *
+     * @param view  The view
+     */
+    private void setupView(View view) {
+        // Setting the child toolbar
+        Toolbar bar = view.findViewById(R.id.shoppingListToolbar);
+        bar.setTitle(this.list.getName());
+        bar.inflateMenu(R.menu.shopping_list_settings_menu);
+
+        // now we have to make the card view invisible
+        cardView = view.findViewById(R.id.newItemCardView);
+        cardView.setVisibility(View.INVISIBLE);
+
+        // finally we have to connect the list view to the top of our constraint layout
+        layout = view.findViewById(R.id.parentLayoutShoppingListView);
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(layout);
+        constraintSet.connect(R.id.shoppingPositionsListView, ConstraintSet.TOP, R.id.shoppingListToolbar, ConstraintSet.BOTTOM);
+        constraintSet.applyTo(layout);
+
+        recyclerView = view.findViewById(R.id.shoppingPositionsListView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
+        recyclerView.setAdapter(this.adapter);
+    }
+
+    public void handleCreatePosEvent(View view) {
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(layout);
+        constraintSet.connect(R.id.shoppingPositionsListView, ConstraintSet.TOP, R.id.newItemCardView, ConstraintSet.BOTTOM);
+        constraintSet.applyTo(layout);
+
+        cardView.setVisibility(View.VISIBLE);
+
+        TextView input = cardView.findViewById(R.id.newPositionName);
+        input.requestFocus();
+        InputMethodManager imm = (InputMethodManager)this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void handleSavePosEvent(View view) {
+        // hides the keyboard when the value was saved
+        InputMethodManager imm = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+
+        Spinner spinner = cardView.findViewById(R.id.categorySpinner);
+        EditText text = cardView.findViewById(R.id.newPositionName);
+
+        String value = spinner.getSelectedItem().toString();
+        Category newCat;
+        if (value.isEmpty() || value.equals("no-category")) {
+            newCat = null;
+        } else {
+            newCat = Category.valueOf(value.toUpperCase());
+        }
+
+        this.list.addPosition(new ListPosition(new ShoppingItem(text.getText().toString(), newCat), 1));
+
+        spinner.setSelection(0);
+        text.setText("Text");
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(layout);
+        constraintSet.connect(R.id.shoppingPositionsListView, ConstraintSet.TOP, R.id.shoppingListToolbar, ConstraintSet.BOTTOM);
+        constraintSet.applyTo(layout);
+
+
+        cardView.setVisibility(View.INVISIBLE);
+        this.adapter.notifyDataSetChanged();
     }
 }

@@ -4,18 +4,121 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".shoppinglist.ShoppingListFragment">
+    tools:context=".shoppinglist.ShoppingListFragment"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/parentLayoutShoppingListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <Toolbar
+            android:id="@+id/shoppingListToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:title="Tmp placeholder"
+            android:background="?attr/colorPrimaryVariant"
+            android:title="@string/placeholder"
+            android:titleTextColor="?attr/colorOnPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/shoppingPositionsListView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="2dp"
+
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/newItemCardView" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/createItemButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/ic_add_white_24dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="?attr/colorOnPrimary"
+            app:backgroundTint="?attr/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@string/add_item_text"
+            android:onClick="handleCreatePosEvent"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/newItemCardView"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/shoppingListToolbar">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/childLayoutShoppingListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/newListImage"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:src="@android:color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/newPositionName"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:selectAllOnFocus="true"
+                    android:text="Name"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginStart="12dp"
+                    app:layout_constraintStart_toEndOf="@id/newListImage"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/saveItemNameButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/add_item_text"
+                    android:focusable="true"
+                    android:onClick="handleSavePosEvent"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_done_black_24dp"
+                    app:backgroundTint="?attr/colorPrimary"
+                    app:fabSize="mini"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/newPositionName"
+                    app:tint="?attr/colorOnPrimary" />
+
+                <Spinner
+                    android:id="@+id/categorySpinner"
+                    android:layout_width="250dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="15dp"
+                    app:layout_constraintStart_toEndOf="@id/newListImage"
+                    app:layout_constraintTop_toBottomOf="@+id/newPositionName" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

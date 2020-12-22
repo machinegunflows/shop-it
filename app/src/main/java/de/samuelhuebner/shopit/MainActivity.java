@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 ;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -67,14 +68,13 @@ public class MainActivity extends AppCompatActivity {
         setCurrentFragment(lists);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
-        bottomNav.setOnNavigationItemSelectedListener((BottomNavigationView.OnNavigationItemSelectedListener) item -> {
+        bottomNav.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.listViewMenuItem:
                     if (singleListMode) {
                         setCurrentFragment(list);
                         break;
                     }
-
                     setCurrentFragment(lists);
                     break;
                 case R.id.historyViewMenuItem:
@@ -92,6 +92,14 @@ public class MainActivity extends AppCompatActivity {
         this.lists.handleCreateListEvent(view);
     }
 
+    public void handleCreatePosEvent(View view) { this.list.handleCreatePosEvent(view); }
+
+    public void handleSavePosEvent(View view) { this.list.handleSavePosEvent(view); }
+
+    public void handleSwitchToAllEvent(View view) {
+        setSingleListMode(false);
+        this.setCurrentFragment(this.lists);
+    }
 
     public Fragment createNewSingleListFragment(String uuid) {
         this.list = ShoppingListFragment.newInstance(uuid);
@@ -99,6 +107,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setSingleListMode(boolean singleListMode) {
+        Button b = findViewById(R.id.switchButton);
+        if (singleListMode) {
+            b.setVisibility(View.VISIBLE);
+        } else {
+            b.setVisibility(View.INVISIBLE);
+        }
         this.singleListMode = singleListMode;
     }
 }
