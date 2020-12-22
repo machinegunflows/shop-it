@@ -13,7 +13,10 @@ public class Database {
     private static ArrayList<String> names = new ArrayList<>();
 
     static {
-        ShoppingList tmp = new ShoppingList("Test1");
+        ShoppingList tmp = new ShoppingList("Extremely stable list");
+
+        tmp.addPosition(new ListPosition(new ShoppingItem("Orange", Category.GROCERIES), 23));
+        tmp.addPosition(new ListPosition(new ShoppingItem("Brot", Category.GROCERIES), 1));
 
         map.put(tmp.getUuid(), tmp);
         names.add(tmp.getName());
@@ -34,6 +37,16 @@ public class Database {
 
         names.add(newList.getName());
         return newList;
+    }
+
+    /**
+     * Returns the shopping list associated to the given id
+     *
+     * @param uuid  The uuid of the shopping list
+     * @return      The shopping list
+     */
+    public ShoppingList getShoppingList(String uuid) {
+        return map.get(uuid);
     }
 
     /**
