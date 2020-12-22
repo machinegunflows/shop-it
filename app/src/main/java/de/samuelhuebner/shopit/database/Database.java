@@ -9,21 +9,22 @@ import java.util.Map;
 public class Database {
     private final DatabaseHelper dbHelper;
 
+    private static boolean hasLoaded = false;
     private static final HashMap<String, ShoppingList> map = new HashMap<>();;
     private static ArrayList<String> names = new ArrayList<>();
 
-    static {
-        ShoppingList tmp = new ShoppingList("Extremely stable list");
-
-        tmp.addPosition(new ListPosition(new ShoppingItem("Orange", Category.GROCERIES), 23));
-        tmp.addPosition(new ListPosition(new ShoppingItem("Brot", Category.GROCERIES), 1));
-
-        map.put(tmp.getUuid(), tmp);
-        names.add(tmp.getName());
-    }
-
     public Database(Context context) {
-        dbHelper = new DatabaseHelper(context);
+        dbHelper = new DatabaseHelper(context, null);
+
+        if (!hasLoaded) {
+            ArrayList<ShoppingList> lists = dbHelper.loadLists();
+
+            for (ShoppingList list : lists) {
+                map.put(list.getUuid(), list);
+                names.add(list.getName());
+            }
+            hasLoaded = true;
+        }
     }
 
     /**
@@ -36,6 +37,9 @@ public class Database {
         map.put(newList.getUuid(), newList);
 
         names.add(newList.getName());
+
+
+        this.dbHelper.createShoppingList(newList);
         return newList;
     }
 
