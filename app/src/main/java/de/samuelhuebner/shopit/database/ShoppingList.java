@@ -24,8 +24,8 @@ public class ShoppingList {
         isComplete = false;
     }
 
-    public ListPosition[] getPositions() {
-        return (ListPosition[]) positions.toArray();
+    public ArrayList<ListPosition> getPositions() {
+        return positions;
     }
 
     public String getUuid() { return uuid; }
