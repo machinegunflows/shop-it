@@ -3,9 +3,12 @@
     <string name="listMenuText">Lists</string>
     <string name="historyMenuText">History</string>
     <string name="profileMenuText">Profile</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <!-- Custom string resources -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="placeholder"><![CDATA[<Placeholder>]]></string>
     <string name="addListButtonText">Add List</string>
     <string name="createButtonText">Create</string>
+    <string name="add_item_text">Add item</string>
+    <string name="noCategoryText">no category</string>
+    <string name="allListsButtonText">All lists</string>
 </resources>
