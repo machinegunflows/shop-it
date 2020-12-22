@@ -19,6 +19,15 @@ public class ShoppingList {
         this.uuid = UUID.randomUUID().toString().replace("-", "");
     }
 
+    public ShoppingList(String name, String uuid) {
+        this.name = name;
+        this.positions = new ArrayList<>();
+        this.isComplete = false;
+
+        this.uuid = uuid;
+    }
+
+
     public void addPosition(ListPosition newPos) {
         positions.add(newPos);
         isComplete = false;
@@ -51,7 +60,14 @@ public class ShoppingList {
         return positions.size();
     }
 
+    /**
+     * Gets the complete status of the lsit
+     *
+     * @return  boolean value if the list is completed or not
+     */
     public boolean isComplete() {
+        int sum = getItemCount() - getCompleted();
+        isComplete = sum == 0;
         return isComplete;
     }
 }
