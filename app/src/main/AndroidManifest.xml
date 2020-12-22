@@ -9,8 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShopIt">
-        <activity android:name=".shoppinglist.CreateListActivity"></activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".shoppinglist.CreateListActivity"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
