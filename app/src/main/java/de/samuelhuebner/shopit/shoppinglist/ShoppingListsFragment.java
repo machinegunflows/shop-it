@@ -1,7 +1,10 @@
 package de.samuelhuebner.shopit.shoppinglist;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -15,6 +18,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import de.samuelhuebner.shopit.MainActivity;
 import de.samuelhuebner.shopit.R;
@@ -118,6 +124,29 @@ public class ShoppingListsFragment extends Fragment {
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
             this.handleListInteractionEvent(adapterView, i);
         });
+
+        listView.setLongClickable(true);
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            TextView listName = view.findViewById(R.id.shoppingListsName);
+
+            new MaterialAlertDialogBuilder(view.getContext())
+                    .setTitle(listName.getText())
+//                    .setMessage()
+                    .setNeutralButton("Cancel", null)
+                    .setNegativeButton("Edit", (dialog, which) -> {
+                        handleListInteractionEvent(parent, position);
+                    })
+                    .setPositiveButton("Delete", ((dialog, which) -> {
+                        db.deleteShoppingList(db.getShoppingLists()[position].getUuid());
+                        this.adapter.notifyDataSetChanged();
+                    }))
+                    .show()
+                    .getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.RED);
+
+            return true;
+        });
+
+//        });
     }
 
     public void handleListInteractionEvent(AdapterView<?> adapterView, int pos) {
