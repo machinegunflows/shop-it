@@ -37,12 +37,12 @@
         android:id="@+id/viewFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#dbdbdb"
         app:layout_constraintBottom_toTopOf="@+id/bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:background="#dbdbdb"
         />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
