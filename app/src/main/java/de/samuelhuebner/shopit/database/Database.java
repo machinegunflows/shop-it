@@ -2,6 +2,8 @@ package de.samuelhuebner.shopit.database;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +13,8 @@ public class Database {
 
     private static boolean hasLoaded = false;
     private static final HashMap<String, ShoppingList> map = new HashMap<>();;
-    private static ArrayList<String> names = new ArrayList<>();
+    private static final ArrayList<String> names = new ArrayList<>();
+    private static final ArrayList<String> uuids = new ArrayList<>();
 
     public Database(Context context) {
         dbHelper = new DatabaseHelper(context, null);
@@ -22,6 +25,7 @@ public class Database {
             for (ShoppingList list : lists) {
                 map.put(list.getUuid(), list);
                 names.add(list.getName());
+                uuids.add(list.getUuid());
             }
             hasLoaded = true;
         }
@@ -37,7 +41,7 @@ public class Database {
         map.put(newList.getUuid(), newList);
 
         names.add(newList.getName());
-
+        uuids.add(newList.getUuid());
 
         this.dbHelper.createShoppingList(newList);
         return newList;
@@ -74,5 +78,18 @@ public class Database {
 
         }
         return names;
+    }
+
+    public void deleteShoppingList(@NonNull String uuid) {
+        int toRemovePos = -1;
+        for (int i = 0; i < uuids.size() ; i++) {
+            if (uuids.get(i).equals(uuid)) toRemovePos = i;
+        }
+
+        uuids.remove(toRemovePos);
+        names.remove(toRemovePos);
+        map.remove(uuid);
+
+        this.dbHelper.deleteShoppingList(uuid);
     }
 }

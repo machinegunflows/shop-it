@@ -90,6 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         val.put(SHOPPING_LIST_NAME_FIELD, newList.getName());
 
         db.insert(SHOPPING_LIST_TABLE_NAME, null, val);
+        db.close();
     }
 
     /**
@@ -129,5 +130,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<ListPosition> getPositions(String listUuid) {
         // TODO: Implement this
         return null;
+    }
+
+    /**
+     * deletes a shopping list given by its uuid
+     *
+     * @param uuid  The uuid of the shopping list that has to be deleted
+     */
+    public void deleteShoppingList(String uuid) {
+        SQLiteDatabase db = getReadableDatabase();
+        db.execSQL("DELETE FROM " + SHOPPING_LIST_TABLE_NAME + " WHERE " + SHOPPING_LIST_UUID_FIELD + "='" + uuid + "';");
+        db.close();
     }
 }
