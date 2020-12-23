@@ -156,6 +156,6 @@ public class ShoppingListsFragment extends Fragment {
 
         main.setSingleListMode(true);
         Fragment f = main.createNewSingleListFragment(db.getShoppingLists()[pos].getUuid());
-        main.setCurrentFragment(f);
+        main.setCurrentFragment(f, null, null);
     }
 }

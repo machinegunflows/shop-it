@@ -19,11 +19,14 @@ import de.samuelhuebner.shopit.shoppinglist.ShoppingListFragment;
 import de.samuelhuebner.shopit.shoppinglist.ShoppingListsFragment;
 
 public class MainActivity extends AppCompatActivity {
+
+    // fragment object variables
     private ShoppingListsFragment lists;
     private ProfileFragment profile;
     private HistoryFragment history;
     private ShoppingListFragment list;
 
+    //
     private boolean singleListMode = false;
 
     @Override
@@ -44,8 +47,16 @@ public class MainActivity extends AppCompatActivity {
      * Helper method which replaces the current fragment with the given one
      * @param fragment  The new fragment that has to be visible
      */
-    public void setCurrentFragment(@NonNull Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.viewFragment, fragment).commit();
+    public void setCurrentFragment(@NonNull Fragment fragment, @Nullable Integer animIn, @Nullable Integer animOut) {
+        if (animIn == null || animOut == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.viewFragment, fragment).commit();
+            return;
+        }
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.viewFragment, fragment)
+                .setCustomAnimations(animIn, animOut)
+                .commit();
     }
 
     /**
@@ -65,23 +76,23 @@ public class MainActivity extends AppCompatActivity {
         this.history = new HistoryFragment();
         this.list = new ShoppingListFragment();
 
-        setCurrentFragment(lists);
+        setCurrentFragment(lists, R.anim.fragment_fade_enter, R.anim.fragment_open_exit);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.listViewMenuItem:
                     if (singleListMode) {
-                        setCurrentFragment(list);
+                        setCurrentFragment(list, R.anim.fragment_fade_enter, R.anim.slide_out);
                         break;
                     }
-                    setCurrentFragment(lists);
+                    setCurrentFragment(lists, R.anim.fragment_fade_enter, R.anim.fragment_open_exit);
                     break;
                 case R.id.historyViewMenuItem:
-                    setCurrentFragment(history);
+                    setCurrentFragment(history, null, null);
                     break;
                 case R.id.profileViewMenuItem:
-                    setCurrentFragment(profile);
+                    setCurrentFragment(profile, null, null);
                     break;
             }
             return true;
@@ -98,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void handleSwitchToAllEvent(View view) {
         setSingleListMode(false);
-        this.setCurrentFragment(this.lists);
+        this.setCurrentFragment(this.lists, null, null);
     }
 
     public Fragment createNewSingleListFragment(String uuid) {

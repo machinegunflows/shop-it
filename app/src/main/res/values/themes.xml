@@ -18,7 +18,6 @@
 
     <!-- ToolBar -->
     <style name="ToolBarStyle" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="backgroundColor">#4a8a5e</item>
         <item name="android:colorPrimary">#4a8a5e</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
