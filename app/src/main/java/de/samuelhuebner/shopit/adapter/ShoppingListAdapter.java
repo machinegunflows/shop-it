@@ -41,9 +41,10 @@ public class ShoppingListAdapter extends ArrayAdapter<String> {
         TextView listName = convertView.findViewById(R.id.shoppingListsName);
         listName.setText(list.getName());
 
-        if (list.isComplete()) {
+        if (list.isComplete() && (list.getItemCount() != 0)) {
             ImageView imageView = convertView.findViewById(R.id.isCompletedIcon);
             imageView.setImageResource(R.drawable.ic_done_black_24dp);
+            listName.setVisibility(View.INVISIBLE);
             imageView.setVisibility(View.VISIBLE);
         } else {
             String s = "" + list.getCompleted() + "/" + list.getItemCount();
