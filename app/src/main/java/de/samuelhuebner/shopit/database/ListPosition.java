@@ -1,13 +1,34 @@
 package de.samuelhuebner.shopit.database;
 
 public class ListPosition {
+    // the parent shopping lists uuid
+    private final String listUuid;
+
+    // the primary key from the database
+    private long id;
+
+    // the name of the list position
     private String name;
+
+    // the associated shopping item
     private ShoppingItem shoppingItem;
-    private String category;
+
+    // status of the list position
     private boolean isCompleted;
+
+    // property which holds the count
     private int count;
 
-    public ListPosition(ShoppingItem shoppingItem, Integer count) {
+    /**
+     * Constructor for creating a ListPostition
+     *
+     * @param shoppingItem      The corresponding shopping item
+     * @param count             The count (defaults to 1)
+     * @param listUuid          The uuid of the parent list
+     *
+     */
+    public ListPosition(ShoppingItem shoppingItem, Integer count, String listUuid) {
+        this.listUuid = listUuid;
         this.name = shoppingItem.getItemName();
         this.shoppingItem = shoppingItem;
 
@@ -16,7 +37,6 @@ public class ListPosition {
         else this.count = count;
 
         this.isCompleted = false;
-        this.category = shoppingItem.getCategory();
     }
 
     public int getCount() {
@@ -31,6 +51,14 @@ public class ListPosition {
         return shoppingItem;
     }
 
+    public String getCategory() {
+        return (shoppingItem.getCategory() == null) ? "no-category" : shoppingItem.getCategory();
+    }
+
+    public String getListUuid() {
+        return listUuid;
+    }
+
     public boolean isCompleted() {
         return isCompleted;
     }
@@ -43,7 +71,8 @@ public class ListPosition {
         this.count = count;
     }
 
-    public String getCategory() {
-        return (category == null) ? "no-category" : category;
+    public void setId(long id) {
+        this.id = id;
     }
+
 }

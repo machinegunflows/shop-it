@@ -5,11 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.se.omapi.SEService;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NavUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     // database version
@@ -36,7 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SHOPPING_ITEM_LIST_POSITION_ID_FIELD = "listPositionId";
 
     // field constants list position
-    private static final String LIST_POSITION_ID_FIELD = "id";
+    private static final String LIST_POSITION_ID_FIELD = "listPositionId";
     private static final String LIST_POSITION_SHOPPING_LIST_ID_FIELD = "shoppingListId";
 
     public DatabaseHelper(@NonNull Context context, @Nullable SQLiteDatabase.CursorFactory factory) {
@@ -99,37 +102,88 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @return      The list of all shopping lists
      */
     public ArrayList<ShoppingList> loadLists() {
-        SQLiteDatabase db = getReadableDatabase();
+        // Raw query string that is used to join the three tables
+        String queryString = "SELECT " +
+                SHOPPING_LIST_TABLE_NAME + "." + SHOPPING_LIST_UUID_FIELD + ", " +
+                SHOPPING_LIST_TABLE_NAME + "." + SHOPPING_LIST_NAME_FIELD + ", " +
+                LIST_POSITION_TABLE_NAME + "." + LIST_POSITION_ID_FIELD + ", " +
+                SHOPPING_ITEM_TABLE_NAME + "." + SHOPPING_ITEM_ID_FIELD + ", " +
+                SHOPPING_ITEM_TABLE_NAME + "." + SHOPPING_ITEM_NAME_FIELD + ", " +
+                SHOPPING_ITEM_TABLE_NAME + "." + SHOPPING_ITEM_CATEGORY_FIELD + ", " +
+                SHOPPING_ITEM_TABLE_NAME + "." + SHOPPING_ITEM_NOTES_FIELD + ", " +
+                SHOPPING_ITEM_TABLE_NAME + "." + SHOPPING_ITEM_URL_FIELD +
+                " FROM "
+                + SHOPPING_LIST_TABLE_NAME + " LEFT JOIN " +  LIST_POSITION_TABLE_NAME + " " +
+                "ON " + SHOPPING_LIST_TABLE_NAME + "." + SHOPPING_LIST_UUID_FIELD + " = " + LIST_POSITION_TABLE_NAME + "." + LIST_POSITION_SHOPPING_LIST_ID_FIELD
+                + " LEFT JOIN " + SHOPPING_ITEM_TABLE_NAME + " " +
+                "ON " + LIST_POSITION_TABLE_NAME + "." + LIST_POSITION_ID_FIELD + " = " + SHOPPING_ITEM_TABLE_NAME + "." + SHOPPING_ITEM_LIST_POSITION_ID_FIELD;
 
-        Cursor dbCursor = db.query(SHOPPING_LIST_TABLE_NAME,
-                new String[] {SHOPPING_LIST_UUID_FIELD, SHOPPING_LIST_NAME_FIELD},
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor dbCursor = db.rawQuery(queryString, null);
 
         ArrayList<ShoppingList> allLists = new ArrayList<>();
+        HashMap<String, ShoppingList> map = new HashMap<>();
 
         if (dbCursor.moveToFirst()) {
             while (!dbCursor.isAfterLast()) {
                 String uuid = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_LIST_UUID_FIELD));
-                String name = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_LIST_NAME_FIELD));
+                int listPosId = dbCursor.getInt(dbCursor.getColumnIndex(LIST_POSITION_ID_FIELD));
+                int shoppingItemId = dbCursor.getInt(dbCursor.getColumnIndex(SHOPPING_ITEM_ID_FIELD));
+                String shoppingItemName = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_ITEM_NAME_FIELD));
+                String shoppingItemCat = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_ITEM_CATEGORY_FIELD));
+                String shoppingItemNotes = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_ITEM_NOTES_FIELD));
+                String shoppingItemUrl = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_ITEM_URL_FIELD));
 
-                allLists.add(new ShoppingList(name, uuid));
+                ShoppingList list;
+                if (map.containsKey(uuid)) {
+                    list = map.get(uuid);
+                } else {
+                    String name = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_LIST_NAME_FIELD));
+                    list = new ShoppingList(name, uuid);
+                    map.put(uuid, list);
+                }
 
+                if (!(listPosId == 0)) {
+                    Category cat = (shoppingItemCat == null || shoppingItemCat.toLowerCase().equals("no-category"))
+                            ? null : Category.valueOf(shoppingItemCat);
+
+                    ShoppingItem newShoppingItem = new ShoppingItem(shoppingItemName, cat);
+
+                    newShoppingItem.setId(shoppingItemId);
+                    newShoppingItem.setNotes(shoppingItemNotes);
+                    newShoppingItem.setItemUrl(shoppingItemUrl);
+
+                    ListPosition listPosition = new ListPosition(newShoppingItem, 1, uuid);
+                    listPosition.setId(listPosId);
+
+                    list.getPositions().add(listPosition);
+                }
                 dbCursor.moveToNext();
             }
         }
 
         dbCursor.close();
+        db.close();
+
+        String[] keys = map.keySet().toArray(new String[0]);
+        for (String key : keys) {
+            ShoppingList tmp = map.get(key);
+            allLists.add(tmp);
+        }
         return allLists;
     }
 
     public ArrayList<ListPosition> getPositions(String listUuid) {
         // TODO: Implement this
         return null;
+    }
+
+    public void createPosition(ListPosition position) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        ContentValues listPosVals = new ContentValues();
+//        db.insert()
     }
 
     /**
