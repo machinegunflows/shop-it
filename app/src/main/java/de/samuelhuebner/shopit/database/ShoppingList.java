@@ -30,6 +30,7 @@ public class ShoppingList {
 
     public void addPosition(ListPosition newPos) {
         positions.add(newPos);
+
         isComplete = false;
     }
 

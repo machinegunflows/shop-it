@@ -142,4 +142,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + SHOPPING_LIST_TABLE_NAME + " WHERE " + SHOPPING_LIST_UUID_FIELD + "='" + uuid + "';");
         db.close();
     }
+
+    public void createListPosition(ListPosition newListPos) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues val = new ContentValues();
+        val.put(LIST_POSITION_SHOPPING_LIST_ID_FIELD, newListPos.getListUuid());
+
+        long rowId = db.insert(LIST_POSITION_TABLE_NAME, null, val);
+
+        newListPos.setId(rowId);
+
+        val = new ContentValues();
+        val.put(SHOPPING_ITEM_LIST_POSITION_ID_FIELD, rowId);
+        val.put(SHOPPING_ITEM_NAME_FIELD, newListPos.getShoppingItem().getItemName());
+        val.put(SHOPPING_ITEM_CATEGORY_FIELD, newListPos.getShoppingItem().getCategory());
+        val.put(SHOPPING_ITEM_NOTES_FIELD, newListPos.getShoppingItem().getNotes());
+        val.put(SHOPPING_ITEM_URL_FIELD, newListPos.getShoppingItem().getItemUrl());
+
+        rowId = db.insert(SHOPPING_ITEM_TABLE_NAME, null, val);
+        newListPos.getShoppingItem().setId(rowId);
+
+        db.close();
+    }
 }

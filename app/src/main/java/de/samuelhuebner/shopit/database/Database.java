@@ -92,4 +92,8 @@ public class Database {
 
         this.dbHelper.deleteShoppingList(uuid);
     }
+
+    public void addListPosition(ListPosition newListPos) {
+        this.dbHelper.createListPosition(newListPos);
+    }
 }

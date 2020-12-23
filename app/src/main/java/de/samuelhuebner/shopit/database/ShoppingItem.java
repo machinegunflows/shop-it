@@ -6,6 +6,7 @@ public class ShoppingItem {
     private String itemUrl;
     private String notes;
     private Double price;
+    private long id;
 
     /**
      * Constructor for a ListItem with only the item name
@@ -85,5 +86,9 @@ public class ShoppingItem {
                 ", notes='" + notes + '\'' +
                 ", price=" + price +
                 '}';
+    }
+
+    public void setId(long rowId) {
+        this.id = rowId;
     }
 }

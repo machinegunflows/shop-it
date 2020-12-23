@@ -88,6 +88,7 @@ public class ShoppingListFragment extends Fragment {
         this.adapter = new ListPositionAdapter(list.getPositions());
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -161,6 +162,7 @@ public class ShoppingListFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
 
+        // gets the category spinner and name edit text views
         Spinner spinner = cardView.findViewById(R.id.categorySpinner);
         EditText text = cardView.findViewById(R.id.newPositionName);
 
@@ -172,7 +174,9 @@ public class ShoppingListFragment extends Fragment {
             newCat = Category.valueOf(value.toUpperCase());
         }
 
-        this.list.addPosition(new ListPosition(new ShoppingItem(text.getText().toString(), newCat), 1));
+        ListPosition newListPos = new ListPosition(new ShoppingItem(text.getText().toString(), newCat), 1, listUUID);
+        this.list.addPosition(newListPos);
+        this.db.addListPosition(newListPos);
 
         spinner.setSelection(0);
         text.setText("Text");
