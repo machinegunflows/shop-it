@@ -11,4 +11,6 @@
     <string name="add_item_text">Add item</string>
     <string name="noCategoryText">no category</string>
     <string name="allListsButtonText">All lists</string>
+    <string name="linkDecorator">Link</string>
+    <string name="notesDecorator">Notes</string>
 </resources>

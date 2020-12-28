@@ -164,7 +164,9 @@ public class ShoppingListFragment extends Fragment {
 
         // gets the category spinner and name edit text views
         Spinner spinner = cardView.findViewById(R.id.categorySpinner);
-        EditText text = cardView.findViewById(R.id.newPositionName);
+        EditText positionName = cardView.findViewById(R.id.newPositionName);
+        EditText positionNotes = cardView.findViewById(R.id.newPositionNotes);
+        EditText positionLink = cardView.findViewById(R.id.newPositionLink);
 
         String value = spinner.getSelectedItem().toString();
         Category newCat;
@@ -174,12 +176,14 @@ public class ShoppingListFragment extends Fragment {
             newCat = Category.valueOf(value.toUpperCase());
         }
 
-        ListPosition newListPos = new ListPosition(new ShoppingItem(text.getText().toString(), newCat), 1, listUUID);
+        ListPosition newListPos = new ListPosition(new ShoppingItem(positionName.getText().toString(), newCat), 1, listUUID);
+        newListPos.getShoppingItem().setItemUrl(positionLink.getText().toString());
+        newListPos.getShoppingItem().setNotes(positionNotes.getText().toString());
         this.list.addPosition(newListPos);
         this.db.addListPosition(newListPos);
 
         spinner.setSelection(0);
-        text.setText("Text");
+        positionName.setText("Text");
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(layout);
         constraintSet.connect(R.id.shoppingPositionsListView, ConstraintSet.TOP, R.id.shoppingListToolbar, ConstraintSet.BOTTOM);

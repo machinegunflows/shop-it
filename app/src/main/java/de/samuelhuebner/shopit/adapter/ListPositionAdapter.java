@@ -1,9 +1,12 @@
 package de.samuelhuebner.shopit.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -16,6 +19,7 @@ import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
 
+import de.samuelhuebner.shopit.MainActivity;
 import de.samuelhuebner.shopit.R;
 import de.samuelhuebner.shopit.database.Database;
 import de.samuelhuebner.shopit.database.ListPosition;
@@ -42,15 +46,37 @@ public class ListPositionAdapter extends RecyclerView.Adapter<ListPositionAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.checkBox.setChecked(this.positions.get(position).isCompleted());
-        holder.listNameText.setText(this.positions.get(position).getName());
-        holder.categoryChip.setText(this.positions.get(position).getCategory().toLowerCase());
+        ListPosition listPos = this.positions.get(position);
+        holder.checkBox.setChecked(listPos.isCompleted());
+        holder.listNameText.setText(listPos.getName());
+        holder.categoryChip.setText(listPos.getCategory().toLowerCase());
+        holder.itemImage.setImageResource(R.drawable.ic_shopping_basket_black_24dp);
 
         holder.setItemClickListener((v, pos) -> {
-            CheckBox cB = (CheckBox) v;
-            ListPosition listPos = this.positions.get(pos);
-            listPos.setCompleted(cB.isChecked());
-            this.db.updatePosStatus(listPos.getId(), cB.isChecked());
+            if (v.getId() == R.id.isCompletedCheckbox) {
+                CheckBox cB = (CheckBox) v;
+                ListPosition listPosition = this.positions.get(pos);
+                listPosition.setCompleted(cB.isChecked());
+                this.db.updatePosStatus(listPosition.getId(), cB.isChecked());
+                Log.d("Listener", "updating checkbox");
+            } else {
+                ListPosition sharedPosition = this.positions.get(pos);
+
+                String shareText = "Hello, \nI would like to share the following item with you:\n\n";
+                shareText += sharedPosition.getName();
+
+                if (!sharedPosition.getShoppingItem().getItemUrl().isEmpty()) {
+                    shareText += "\n\nYou can find it here:\n " + sharedPosition.getShoppingItem().getItemUrl() + " \n";
+                }
+
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                sendIntent.setType("text/plain");
+
+                Intent shareIntent = Intent.createChooser(sendIntent, null);
+                v.getContext().startActivity(shareIntent);
+            }
         });
     }
 
@@ -64,7 +90,7 @@ public class ListPositionAdapter extends RecyclerView.Adapter<ListPositionAdapte
         public ImageView itemImage;
         public TextView listNameText;
         public Chip categoryChip;
-        public ImageButton shareButtonView;
+        public Button shareButtonView;
 
         private ItemClickListener itemClickListener;
 
@@ -78,6 +104,7 @@ public class ListPositionAdapter extends RecyclerView.Adapter<ListPositionAdapte
             shareButtonView = itemView.findViewById(R.id.shareButtonView);
 
             checkBox.setOnClickListener(this);
+            shareButtonView.setOnClickListener(this);
         }
 
         @Override

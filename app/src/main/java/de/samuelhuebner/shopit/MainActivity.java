@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -30,6 +31,15 @@ public class MainActivity extends AppCompatActivity {
 
     //
     private boolean singleListMode = false;
+
+    public static void shareItem(String shareText) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        sendIntent.setType("text/plain");
+
+        Intent shareIntent = Intent.createChooser(sendIntent, null);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
