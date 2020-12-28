@@ -15,6 +15,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import de.samuelhuebner.shopit.R;
 import de.samuelhuebner.shopit.database.Database;
+import de.samuelhuebner.shopit.database.EventType;
+import de.samuelhuebner.shopit.database.HistoryEvent;
 import de.samuelhuebner.shopit.database.ShoppingList;
 
 public class CreateListActivity extends AppCompatActivity {
@@ -53,6 +55,7 @@ public class CreateListActivity extends AppCompatActivity {
 
         // creates the new list
         ShoppingList list = db.createShoppingList(name);
+        db.addHistoryEvent(new HistoryEvent("Added new shopping list: " + list.getName(), EventType.CREATED_LIST));
 
         // puts the UUID as a result (in case its needed)
         result.putExtra("LIST_UUID", list.getUuid());

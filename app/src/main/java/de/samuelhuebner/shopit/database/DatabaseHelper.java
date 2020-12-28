@@ -25,6 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SHOPPING_LIST_TABLE_NAME = "shoppingList";
     private static final String LIST_POSITION_TABLE_NAME = "listPosition";
     private static final String SHOPPING_ITEM_TABLE_NAME = "shoppingItem";
+    private static final String HISTORY_EVENT_TABLE_NAME = "historyEvent";
 
     // field constants shoppingList
     private static final String SHOPPING_LIST_UUID_FIELD = "uuid";
@@ -42,6 +43,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LIST_POSITION_ID_FIELD = "listPositionId";
     private static final String LIST_POSITION_STATUS_FIELD = "isCompleted";
     private static final String LIST_POSITION_SHOPPING_LIST_ID_FIELD = "shoppingListId";
+
+    // field constants history event
+    private static final String HISTORY_EVENT_ID_FIELD = "historyEventId";
+    private static final String HISTORY_EVENT_TEXT_FIELD = "historyEventText";
+    private static final String HISTORY_EVENT_TYPE_FIELD = "historyEventType";
 
     public DatabaseHelper(@NonNull Context context, @Nullable SQLiteDatabase.CursorFactory factory) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -71,6 +77,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 SHOPPING_ITEM_CATEGORY_FIELD + " VARCHAR(15), " +
                 SHOPPING_ITEM_LIST_POSITION_ID_FIELD + " INTEGER NOT NULL REFERENCES "+ LIST_POSITION_TABLE_NAME + "(ID) ON DELETE CASCADE" +
                 ")");
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + HISTORY_EVENT_TABLE_NAME + " (" +
+                HISTORY_EVENT_ID_FIELD + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, " +
+                HISTORY_EVENT_TYPE_FIELD + " VARCHAR(15) NOT NULL, " +
+                HISTORY_EVENT_TEXT_FIELD + " VARCHAR NOT NULL" +
+                ")");
     }
 
     @Override
@@ -78,6 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + SHOPPING_ITEM_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + LIST_POSITION_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SHOPPING_LIST_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + HISTORY_EVENT_TABLE_NAME);
 
         onCreate(db);
     }
@@ -231,6 +244,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(LIST_POSITION_STATUS_FIELD, (checked) ? 1 : 0);
 
         db.update(LIST_POSITION_TABLE_NAME, values, LIST_POSITION_ID_FIELD + "=?", new String[] {String.valueOf(id)});
+        db.close();
+    }
+
+    public void storeHistoryEvent(HistoryEvent event) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(HISTORY_EVENT_TYPE_FIELD, event.getType().toString());
+        values.put(HISTORY_EVENT_TEXT_FIELD, event.getEventText());
+
+        db.insert(HISTORY_EVENT_TABLE_NAME, null, values);
+        db.close();
+    }
+
+    public ArrayList<HistoryEvent> loadEvents() {
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<HistoryEvent> events = new ArrayList<>();
+
+        Cursor dbCursor = db.query(
+                HISTORY_EVENT_TABLE_NAME,
+                new String[] {HISTORY_EVENT_ID_FIELD, HISTORY_EVENT_TYPE_FIELD, HISTORY_EVENT_TEXT_FIELD},
+                null,
+                null,
+                null,
+                null,
+                HISTORY_EVENT_ID_FIELD + " DESC"
+        );
+
+        if (dbCursor.moveToFirst()) {
+            while (!dbCursor.isAfterLast()) {
+                String text = dbCursor.getString(dbCursor.getColumnIndex(HISTORY_EVENT_TEXT_FIELD));
+                String type = dbCursor.getString(dbCursor.getColumnIndex(HISTORY_EVENT_TYPE_FIELD));
+
+                events.add(new HistoryEvent(text, EventType.valueOf(type)));
+
+                dbCursor.moveToNext();
+            }
+        }
+        dbCursor.close();
+        db.close();
+        return events;
+    }
+
+    public void deleteHistory() {
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.execSQL("DELETE FROM " + HISTORY_EVENT_TABLE_NAME);
         db.close();
     }
 }

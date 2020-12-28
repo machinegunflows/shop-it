@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Database {
     private final DatabaseHelper dbHelper;
@@ -15,6 +14,8 @@ public class Database {
     private static final HashMap<String, ShoppingList> map = new HashMap<>();;
     private static final ArrayList<String> names = new ArrayList<>();
     private static final ArrayList<String> uuids = new ArrayList<>();
+
+    private static final ArrayList<HistoryEvent> historyEvents = new ArrayList<>();
 
     public Database(Context context) {
         dbHelper = new DatabaseHelper(context, null);
@@ -27,6 +28,10 @@ public class Database {
                 names.add(list.getName());
                 uuids.add(list.getUuid());
             }
+
+
+            ArrayList<HistoryEvent> events = dbHelper.loadEvents();
+            historyEvents.addAll(events);
             hasLoaded = true;
         }
     }
@@ -99,5 +104,19 @@ public class Database {
 
     public void updatePosStatus(long id, boolean checked) {
         this.dbHelper.updatePosStatus(id, checked);
+    }
+
+    public ArrayList<HistoryEvent> getHistoryEvents() {
+        return historyEvents;
+    }
+
+    public void addHistoryEvent(HistoryEvent event) {
+        historyEvents.add(0, event);
+        this.dbHelper.storeHistoryEvent(event);
+    }
+
+    public void clearHistory() {
+        historyEvents.clear();
+        this.dbHelper.deleteHistory();
     }
 }

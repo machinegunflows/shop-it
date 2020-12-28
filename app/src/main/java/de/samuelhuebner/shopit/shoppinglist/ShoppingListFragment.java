@@ -28,6 +28,8 @@ import de.samuelhuebner.shopit.R;
 import de.samuelhuebner.shopit.adapter.ListPositionAdapter;
 import de.samuelhuebner.shopit.database.Category;
 import de.samuelhuebner.shopit.database.Database;
+import de.samuelhuebner.shopit.database.EventType;
+import de.samuelhuebner.shopit.database.HistoryEvent;
 import de.samuelhuebner.shopit.database.ListPosition;
 import de.samuelhuebner.shopit.database.ShoppingItem;
 import de.samuelhuebner.shopit.database.ShoppingList;
@@ -182,13 +184,15 @@ public class ShoppingListFragment extends Fragment {
         this.list.addPosition(newListPos);
         this.db.addListPosition(newListPos);
 
+        String historyText = "Added entry: " + newListPos.getName() + " to list: " + this.list.getName();
+        this.db.addHistoryEvent(new HistoryEvent(historyText, EventType.CREATED_POSITION));
+
         spinner.setSelection(0);
         positionName.setText("Text");
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(layout);
         constraintSet.connect(R.id.shoppingPositionsListView, ConstraintSet.TOP, R.id.shoppingListToolbar, ConstraintSet.BOTTOM);
         constraintSet.applyTo(layout);
-
 
         cardView.setVisibility(View.INVISIBLE);
         this.adapter.notifyDataSetChanged();

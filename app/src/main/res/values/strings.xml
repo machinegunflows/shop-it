@@ -13,4 +13,5 @@
     <string name="allListsButtonText">All lists</string>
     <string name="linkDecorator">Link</string>
     <string name="notesDecorator">Notes</string>
+    <string name="clearButtonText">Clear</string>
 </resources>

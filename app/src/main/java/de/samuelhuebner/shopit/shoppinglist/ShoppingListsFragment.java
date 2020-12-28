@@ -26,6 +26,9 @@ import de.samuelhuebner.shopit.MainActivity;
 import de.samuelhuebner.shopit.R;
 import de.samuelhuebner.shopit.adapter.ShoppingListAdapter;
 import de.samuelhuebner.shopit.database.Database;
+import de.samuelhuebner.shopit.database.EventType;
+import de.samuelhuebner.shopit.database.HistoryEvent;
+import de.samuelhuebner.shopit.database.ShoppingList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -131,13 +134,15 @@ public class ShoppingListsFragment extends Fragment {
 
             new MaterialAlertDialogBuilder(view.getContext())
                     .setTitle(listName.getText())
-//                    .setMessage()
                     .setNeutralButton("Cancel", null)
                     .setNegativeButton("Edit", (dialog, which) -> {
                         handleListInteractionEvent(parent, position);
                     })
                     .setPositiveButton("Delete", ((dialog, which) -> {
-                        db.deleteShoppingList(db.getShoppingLists()[position].getUuid());
+                        ShoppingList deleted = db.getShoppingLists()[position];
+                        db.deleteShoppingList(deleted.getUuid());
+                        HistoryEvent deleteEvent = new HistoryEvent("Deleted shopping list: " + deleted.getName(), EventType.DELETED_LIST);
+                        db.addHistoryEvent(deleteEvent);
                         this.adapter.notifyDataSetChanged();
                     }))
                     .show()

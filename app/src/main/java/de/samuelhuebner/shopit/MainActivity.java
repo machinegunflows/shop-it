@@ -41,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        this.lists = new ShoppingListsFragment();
+        this.history = new HistoryFragment();
+        this.profile = new ProfileFragment();
+
         setupFragments();
         setupToolbar();
     }
@@ -54,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.viewFragment);
 
-        String activeFragmentName = "";
+        String activeFragmentName;
+
+        // we have to put the current fragment and if needed the selected list uuid into the shared preferences
         if (currentFragment instanceof ShoppingListFragment) {
             activeFragmentName = "list";
             editor.putString("ACTIVE_LIST_UUID", this.activeUuid);
@@ -79,15 +85,18 @@ public class MainActivity extends AppCompatActivity {
         String fragmentName = prefs.getString("ACTIVE_FRAGMENT", "");
         switch (fragmentName) {
             case "lists":
-                this.currentFragment = new ShoppingListsFragment();
+                this.lists = new ShoppingListsFragment();
+                this.currentFragment = this.lists;
                 break;
             case "list":
                 String uuid = prefs.getString("ACTIVE_LIST_UUID", "");
-                this.currentFragment = ShoppingListFragment.newInstance(uuid);
+                this.list =  ShoppingListFragment.newInstance(uuid);
+                this.currentFragment = this.list;
                 this.setSingleListMode(true);
                 break;
             case "history":
-                this.currentFragment = new HistoryFragment();
+                this.history = new HistoryFragment();
+                this.currentFragment = this.history;
                 break;
             case "profile":
                 this.currentFragment = new ProfileFragment();
@@ -132,11 +141,6 @@ public class MainActivity extends AppCompatActivity {
      * Method which sets up the Fragments for the app and adds a listener for the bottom navigation bar
      */
     private void setupFragments() {
-        this.lists = new ShoppingListsFragment();
-        this.profile = new ProfileFragment();
-        this.history = new HistoryFragment();
-        this.list = new ShoppingListFragment();
-
         if (currentFragment == null) {
             this.currentFragment = this.lists;
         }
@@ -193,5 +197,9 @@ public class MainActivity extends AppCompatActivity {
             b.setVisibility(View.INVISIBLE);
         }
         this.singleListMode = singleListMode;
+    }
+
+    public void handleClearHistoryEvent(View view) {
+        this.history.handleClearHistoryEvent(view);
     }
 }
