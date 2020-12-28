@@ -17,14 +17,17 @@ import com.google.android.material.chip.Chip;
 import java.util.ArrayList;
 
 import de.samuelhuebner.shopit.R;
+import de.samuelhuebner.shopit.database.Database;
 import de.samuelhuebner.shopit.database.ListPosition;
 
 public class ListPositionAdapter extends RecyclerView.Adapter<ListPositionAdapter.ViewHolder> {
+    private final Database db;
     private ArrayList<ListPosition> positions;
     private Context context;
 
-    public ListPositionAdapter(@NonNull ArrayList<ListPosition> positions) {
+    public ListPositionAdapter(@NonNull ArrayList<ListPosition> positions, Database db) {
         this.positions = positions;
+        this.db = db;
     }
 
     @NonNull
@@ -39,10 +42,16 @@ public class ListPositionAdapter extends RecyclerView.Adapter<ListPositionAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.checkBox.setActivated(this.positions.get(position).isCompleted());
+        holder.checkBox.setChecked(this.positions.get(position).isCompleted());
         holder.listNameText.setText(this.positions.get(position).getName());
-
         holder.categoryChip.setText(this.positions.get(position).getCategory().toLowerCase());
+
+        holder.setItemClickListener((v, pos) -> {
+            CheckBox cB = (CheckBox) v;
+            ListPosition listPos = this.positions.get(pos);
+            listPos.setCompleted(cB.isChecked());
+            this.db.updatePosStatus(listPos.getId(), cB.isChecked());
+        });
     }
 
     @Override
@@ -50,12 +59,14 @@ public class ListPositionAdapter extends RecyclerView.Adapter<ListPositionAdapte
         return positions.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public CheckBox checkBox;
         public ImageView itemImage;
         public TextView listNameText;
         public Chip categoryChip;
         public ImageButton shareButtonView;
+
+        private ItemClickListener itemClickListener;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,6 +76,21 @@ public class ListPositionAdapter extends RecyclerView.Adapter<ListPositionAdapte
             listNameText = itemView.findViewById(R.id.listNameText);
             categoryChip = itemView.findViewById(R.id.categoryChip);
             shareButtonView = itemView.findViewById(R.id.shareButtonView);
+
+            checkBox.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            this.itemClickListener.onItemClick(v, getLayoutPosition());
+        }
+
+        public void setItemClickListener(ItemClickListener itemClickListener) {
+            this.itemClickListener = itemClickListener;
+        }
+
+        interface ItemClickListener {
+            void onItemClick(View v, int pos);
         }
     }
 

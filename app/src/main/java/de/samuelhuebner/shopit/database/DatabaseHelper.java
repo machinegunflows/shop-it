@@ -40,6 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // field constants list position
     private static final String LIST_POSITION_ID_FIELD = "listPositionId";
+    private static final String LIST_POSITION_STATUS_FIELD = "isCompleted";
     private static final String LIST_POSITION_SHOPPING_LIST_ID_FIELD = "shoppingListId";
 
     public DatabaseHelper(@NonNull Context context, @Nullable SQLiteDatabase.CursorFactory factory) {
@@ -58,6 +59,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Secondly we have to create the list position table and set a foreign key to the shopping list table
         db.execSQL("CREATE TABLE IF NOT EXISTS " + LIST_POSITION_TABLE_NAME + " (" +
                 LIST_POSITION_ID_FIELD + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, " +
+                LIST_POSITION_STATUS_FIELD + " INTEGER DEFAULT 0 NOT NULL, " +
                 LIST_POSITION_SHOPPING_LIST_ID_FIELD + " VARCHAR NOT NULL REFERENCES " + SHOPPING_LIST_TABLE_NAME + "(uuid) ON DELETE CASCADE" +
                 ")");
 
@@ -107,6 +109,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 SHOPPING_LIST_TABLE_NAME + "." + SHOPPING_LIST_UUID_FIELD + ", " +
                 SHOPPING_LIST_TABLE_NAME + "." + SHOPPING_LIST_NAME_FIELD + ", " +
                 LIST_POSITION_TABLE_NAME + "." + LIST_POSITION_ID_FIELD + ", " +
+                LIST_POSITION_TABLE_NAME + "." + LIST_POSITION_STATUS_FIELD + ", " +
                 SHOPPING_ITEM_TABLE_NAME + "." + SHOPPING_ITEM_ID_FIELD + ", " +
                 SHOPPING_ITEM_TABLE_NAME + "." + SHOPPING_ITEM_NAME_FIELD + ", " +
                 SHOPPING_ITEM_TABLE_NAME + "." + SHOPPING_ITEM_CATEGORY_FIELD + ", " +
@@ -130,6 +133,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String uuid = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_LIST_UUID_FIELD));
                 int listPosId = dbCursor.getInt(dbCursor.getColumnIndex(LIST_POSITION_ID_FIELD));
                 int shoppingItemId = dbCursor.getInt(dbCursor.getColumnIndex(SHOPPING_ITEM_ID_FIELD));
+                Boolean isCompleted = dbCursor.getLong(dbCursor.getColumnIndex(LIST_POSITION_STATUS_FIELD)) == 1;
                 String shoppingItemName = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_ITEM_NAME_FIELD));
                 String shoppingItemCat = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_ITEM_CATEGORY_FIELD));
                 String shoppingItemNotes = dbCursor.getString(dbCursor.getColumnIndex(SHOPPING_ITEM_NOTES_FIELD));
@@ -156,7 +160,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                     ListPosition listPosition = new ListPosition(newShoppingItem, 1, uuid);
                     listPosition.setId(listPosId);
-
+                    listPosition.setCompleted(isCompleted);
                     list.getPositions().add(listPosition);
                 }
                 dbCursor.moveToNext();
@@ -217,6 +221,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         rowId = db.insert(SHOPPING_ITEM_TABLE_NAME, null, val);
         newListPos.getShoppingItem().setId(rowId);
 
+        db.close();
+    }
+
+    public void updatePosStatus(long id, boolean checked) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(LIST_POSITION_STATUS_FIELD, (checked) ? 1 : 0);
+
+        db.update(LIST_POSITION_TABLE_NAME, values, LIST_POSITION_ID_FIELD + "=?", new String[] {String.valueOf(id)});
         db.close();
     }
 }

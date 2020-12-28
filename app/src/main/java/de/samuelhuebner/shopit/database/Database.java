@@ -96,4 +96,8 @@ public class Database {
     public void addListPosition(ListPosition newListPos) {
         this.dbHelper.createListPosition(newListPos);
     }
+
+    public void updatePosStatus(long id, boolean checked) {
+        this.dbHelper.updatePosStatus(id, checked);
+    }
 }

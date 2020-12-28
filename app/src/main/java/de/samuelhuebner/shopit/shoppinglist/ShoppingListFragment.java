@@ -85,7 +85,7 @@ public class ShoppingListFragment extends Fragment {
             list = db.getShoppingList(listUUID);
         }
 
-        this.adapter = new ListPositionAdapter(list.getPositions());
+        this.adapter = new ListPositionAdapter(list.getPositions(), this.db);
     }
 
 
