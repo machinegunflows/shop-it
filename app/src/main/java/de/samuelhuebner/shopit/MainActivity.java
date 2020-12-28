@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean singleListMode = false;
     private String activeUuid = "";
     private Fragment currentFragment = null;
+    private String currentFragmentId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
+        this.currentFragmentId = (fragmentName.equals("")) ? "list" : fragmentName;
         this.setupToolbar();
         this.setupFragments();
     }
@@ -149,9 +151,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setCurrentFragment(currentFragment, R.anim.fragment_fade_enter, R.anim.fragment_open_exit);
-
-
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
+
+        switch (currentFragmentId) {
+            case "history":
+                bottomNav.setSelectedItemId(R.id.historyViewMenuItem);
+                break;
+            case "profile":
+                bottomNav.setSelectedItemId(R.id.profileViewMenuItem);
+                break;
+            default:
+                bottomNav.setSelectedItemId(R.id.listViewMenuItem);
+                break;
+        }
+
         bottomNav.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.listViewMenuItem:
