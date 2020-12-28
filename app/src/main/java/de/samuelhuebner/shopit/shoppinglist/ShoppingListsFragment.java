@@ -145,9 +145,8 @@ public class ShoppingListsFragment extends Fragment {
 
             return true;
         });
-
-//        });
     }
+
 
     public void handleListInteractionEvent(AdapterView<?> adapterView, int pos) {
         MainActivity main = (MainActivity)getActivity();
