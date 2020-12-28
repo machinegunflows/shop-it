@@ -24,6 +24,7 @@ import android.widget.Toolbar;
 
 import java.util.ArrayList;
 
+import de.samuelhuebner.shopit.MainActivity;
 import de.samuelhuebner.shopit.R;
 import de.samuelhuebner.shopit.adapter.ListPositionAdapter;
 import de.samuelhuebner.shopit.database.Category;
@@ -54,6 +55,7 @@ public class ShoppingListFragment extends Fragment {
     private ListPositionAdapter adapter;
 
     private Context context;
+    private MainActivity mainActivity;
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -68,11 +70,12 @@ public class ShoppingListFragment extends Fragment {
      * @return A new instance of fragment ShoppingListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ShoppingListFragment newInstance(String uuid) {
+    public static ShoppingListFragment newInstance(String uuid, MainActivity mainActivity) {
         ShoppingListFragment fragment = new ShoppingListFragment();
         Bundle args = new Bundle();
         args.putString(LIST_UUID, uuid);
         fragment.setArguments(args);
+        fragment.mainActivity = mainActivity;
         return fragment;
     }
 
@@ -127,6 +130,23 @@ public class ShoppingListFragment extends Fragment {
         Toolbar bar = view.findViewById(R.id.shoppingListToolbar);
         bar.setTitle(this.list.getName());
         bar.inflateMenu(R.menu.shopping_list_settings_menu);
+
+        bar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.editMenuEntry:
+                    // TODO: Start edit list activity
+                    break;
+                case R.id.deleteMenuEntry:
+                    db.deleteShoppingList(list.getUuid());
+                    HistoryEvent deleteEvent = new HistoryEvent("Deleted shopping list: " + list.getName(), EventType.DELETED_LIST);
+                    db.addHistoryEvent(deleteEvent);
+
+                    this.mainActivity.handleSwitchToAllEvent(getView());
+                    break;
+            }
+
+            return true;
+        });
 
         // now we have to make the card view invisible
         cardView = view.findViewById(R.id.newItemCardView);

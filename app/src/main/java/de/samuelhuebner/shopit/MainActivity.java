@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             case "list":
                 String uuid = prefs.getString("ACTIVE_LIST_UUID", "");
                 if (Database.contains(uuid)) {
-                    this.list =  ShoppingListFragment.newInstance(uuid);
+                    this.list =  ShoppingListFragment.newInstance(uuid, this);
                     this.currentFragment = this.list;
                     this.setSingleListMode(true);
                     break;
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
     public Fragment createNewSingleListFragment(String uuid) {
         this.activeUuid = uuid;
-        this.list = ShoppingListFragment.newInstance(uuid);
+        this.list = ShoppingListFragment.newInstance(uuid, this);
         return this.list;
     }
 
