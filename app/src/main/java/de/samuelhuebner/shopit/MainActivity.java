@@ -18,6 +18,7 @@ import android.widget.Button;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import de.samuelhuebner.shopit.database.Database;
 import de.samuelhuebner.shopit.history.HistoryFragment;
 import de.samuelhuebner.shopit.profile.ProfileFragment;
 import de.samuelhuebner.shopit.shoppinglist.ShoppingListFragment;
@@ -84,22 +85,24 @@ public class MainActivity extends AppCompatActivity {
 
         String fragmentName = prefs.getString("ACTIVE_FRAGMENT", "");
         switch (fragmentName) {
-            case "lists":
-                this.lists = new ShoppingListsFragment();
-                this.currentFragment = this.lists;
-                break;
-            case "list":
-                String uuid = prefs.getString("ACTIVE_LIST_UUID", "");
-                this.list =  ShoppingListFragment.newInstance(uuid);
-                this.currentFragment = this.list;
-                this.setSingleListMode(true);
-                break;
             case "history":
                 this.history = new HistoryFragment();
                 this.currentFragment = this.history;
                 break;
             case "profile":
                 this.currentFragment = new ProfileFragment();
+                break;
+            case "list":
+                String uuid = prefs.getString("ACTIVE_LIST_UUID", "");
+                if (Database.contains(uuid)) {
+                    this.list =  ShoppingListFragment.newInstance(uuid);
+                    this.currentFragment = this.list;
+                    this.setSingleListMode(true);
+                    break;
+                }
+            default:
+                this.lists = new ShoppingListsFragment();
+                this.currentFragment = this.lists;
                 break;
         }
 

@@ -36,6 +36,10 @@ public class Database {
         }
     }
 
+    public static boolean contains(String uuid) {
+        return map.containsKey(uuid);
+    }
+
     /**
      * Creates a new shopping list and puts it into the hash map
      * @param name      The name of the new shopping list
