@@ -5,9 +5,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.ListFragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -31,15 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     //
     private boolean singleListMode = false;
-
-    public static void shareItem(String shareText) {
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-        sendIntent.setType("text/plain");
-
-        Intent shareIntent = Intent.createChooser(sendIntent, null);
-    }
+    private String activeUuid = "";
+    private Fragment currentFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +43,59 @@ public class MainActivity extends AppCompatActivity {
 
         setupFragments();
         setupToolbar();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.viewFragment);
+
+        String activeFragmentName = "";
+        if (currentFragment instanceof ShoppingListFragment) {
+            activeFragmentName = "list";
+            editor.putString("ACTIVE_LIST_UUID", this.activeUuid);
+        } else if (currentFragment instanceof ShoppingListsFragment) {
+            activeFragmentName = "lists";
+        } else if (currentFragment instanceof HistoryFragment) {
+            activeFragmentName = "history";
+        } else {
+            activeFragmentName = "profile";
+        }
+
+        editor.putString("ACTIVE_FRAGMENT", activeFragmentName);
+        editor.apply();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+
+        String fragmentName = prefs.getString("ACTIVE_FRAGMENT", "");
+        switch (fragmentName) {
+            case "lists":
+                this.currentFragment = new ShoppingListsFragment();
+                break;
+            case "list":
+                String uuid = prefs.getString("ACTIVE_LIST_UUID", "");
+                this.currentFragment = ShoppingListFragment.newInstance(uuid);
+                this.setSingleListMode(true);
+                break;
+            case "history":
+                this.currentFragment = new HistoryFragment();
+                break;
+            case "profile":
+                this.currentFragment = new ProfileFragment();
+                break;
+        }
+
+        this.setupToolbar();
+        this.setupFragments();
     }
 
     @Override
@@ -89,7 +137,12 @@ public class MainActivity extends AppCompatActivity {
         this.history = new HistoryFragment();
         this.list = new ShoppingListFragment();
 
-        setCurrentFragment(lists, R.anim.fragment_fade_enter, R.anim.fragment_open_exit);
+        if (currentFragment == null) {
+            this.currentFragment = this.lists;
+        }
+
+        setCurrentFragment(currentFragment, R.anim.fragment_fade_enter, R.anim.fragment_open_exit);
+
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setOnNavigationItemSelectedListener(item -> {
@@ -122,10 +175,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void handleSwitchToAllEvent(View view) {
         setSingleListMode(false);
+        this.activeUuid = "";
         this.setCurrentFragment(this.lists, null, null);
     }
 
     public Fragment createNewSingleListFragment(String uuid) {
+        this.activeUuid = uuid;
         this.list = ShoppingListFragment.newInstance(uuid);
         return this.list;
     }
