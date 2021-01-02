@@ -314,4 +314,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         deletedListPos.getShoppingItem().setId(rowId);
         db.close();
     }
+
+    public void updateShoppingList(ShoppingList list) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(SHOPPING_LIST_NAME_FIELD, list.getName());
+
+        db.update(SHOPPING_LIST_TABLE_NAME, values, SHOPPING_LIST_UUID_FIELD + "=?", new String[] {list.getUuid()});
+        db.close();
+    }
 }

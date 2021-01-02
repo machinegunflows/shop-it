@@ -1,7 +1,9 @@
 package de.samuelhuebner.shopit.shoppinglist;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -9,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -79,6 +82,7 @@ public class ShoppingListFragment extends Fragment {
      */
     private int deletedPos = -1;
     private ListPosition deletedListPos = null;
+    private Toolbar bar;
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -88,11 +92,11 @@ public class ShoppingListFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param uuid      Parameter 1.
+     * @param uuid          The uuid of the corresponding list
+     * @param mainActivity  The main activity
      *
      * @return A new instance of fragment ShoppingListFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ShoppingListFragment newInstance(String uuid, MainActivity mainActivity) {
         ShoppingListFragment fragment = new ShoppingListFragment();
         Bundle args = new Bundle();
@@ -151,14 +155,16 @@ public class ShoppingListFragment extends Fragment {
      */
     private void setupView(View view) {
         // Setting the child toolbar
-        Toolbar bar = view.findViewById(R.id.shoppingListToolbar);
+        this.bar = view.findViewById(R.id.shoppingListToolbar);
         bar.setTitle(this.list.getName());
         bar.inflateMenu(R.menu.shopping_list_settings_menu);
 
         bar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.editMenuEntry:
-                    // TODO: Start edit list activity
+                    Intent editListIntent = new Intent(getActivity(), EditShoppingListActivity.class);
+                    editListIntent.putExtra("LIST_UUID", listUUID);
+                    startActivityForResult(editListIntent, 801);
                     break;
                 case R.id.deleteMenuEntry:
                     db.deleteShoppingList(list.getUuid());
@@ -229,6 +235,16 @@ public class ShoppingListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
         recyclerView.setAdapter(this.adapter);
         new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (!(requestCode == 801)) return;
+        if (!(resultCode == Activity.RESULT_OK)) return;
+
+        bar.setTitle(this.list.getName());
     }
 
     public void handleCreatePosEvent(View view) {

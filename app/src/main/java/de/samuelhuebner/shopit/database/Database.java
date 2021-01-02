@@ -136,4 +136,8 @@ public class Database {
 
         this.dbHelper.addBackListPosition(deletedListPos, id);
     }
+
+    public void updateList(ShoppingList list) {
+        this.dbHelper.updateShoppingList(list);
+    }
 }

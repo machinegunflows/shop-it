@@ -100,7 +100,7 @@ public class ShoppingListsFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (!(requestCode == 800)) return;
+        if (!(requestCode == 800) && !(requestCode == 801)) return;
         if (!(resultCode == Activity.RESULT_OK)) return;
 
         this.adapter.notifyDataSetChanged();
@@ -136,7 +136,9 @@ public class ShoppingListsFragment extends Fragment {
                     .setTitle(listName.getText())
                     .setNeutralButton("Cancel", null)
                     .setNegativeButton("Edit", (dialog, which) -> {
-                        handleListInteractionEvent(parent, position);
+                        Intent editListIntent = new Intent(getActivity(), EditShoppingListActivity.class);
+                        editListIntent.putExtra("LIST_UUID", this.db.getShoppingLists()[position].getUuid());
+                        startActivityForResult(editListIntent, 801);
                     })
                     .setPositiveButton("Delete", ((dialog, which) -> {
                         ShoppingList deleted = db.getShoppingLists()[position];
@@ -151,7 +153,6 @@ public class ShoppingListsFragment extends Fragment {
             return true;
         });
     }
-
 
     public void handleListInteractionEvent(AdapterView<?> adapterView, int pos) {
         MainActivity main = (MainActivity)getActivity();

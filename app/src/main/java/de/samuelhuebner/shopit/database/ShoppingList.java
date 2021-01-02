@@ -87,4 +87,8 @@ public class ShoppingList {
         }
         return position;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

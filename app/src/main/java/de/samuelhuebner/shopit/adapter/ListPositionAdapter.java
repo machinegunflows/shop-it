@@ -50,7 +50,7 @@ public class ListPositionAdapter extends RecyclerView.Adapter<ListPositionAdapte
         holder.checkBox.setChecked(listPos.isCompleted());
         holder.listNameText.setText(listPos.getName());
         holder.categoryChip.setText(listPos.getCategory().toLowerCase());
-        holder.itemImage.setImageResource(R.drawable.ic_shopping_basket_black_24dp);
+        holder.itemImage.setImageResource(R.drawable.ic_category_24px);
 
         holder.setItemClickListener((v, pos) -> {
             if (v.getId() == R.id.isCompletedCheckbox) {
