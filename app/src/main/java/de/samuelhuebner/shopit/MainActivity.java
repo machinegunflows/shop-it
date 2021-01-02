@@ -179,18 +179,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         bottomNav.setOnNavigationItemSelectedListener(item -> {
+            Button b = findViewById(R.id.switchButton);
             switch (item.getItemId()) {
                 case R.id.listViewMenuItem:
                     if (singleListMode) {
+                        b.setVisibility(View.VISIBLE);
                         setCurrentFragment(list, R.anim.fragment_fade_enter, R.anim.slide_out);
                         break;
                     }
                     setCurrentFragment(lists, R.anim.fragment_fade_enter, R.anim.fragment_open_exit);
                     break;
                 case R.id.historyViewMenuItem:
+                    b.setVisibility(View.INVISIBLE);
                     setCurrentFragment(history, null, null);
                     break;
                 case R.id.profileViewMenuItem:
+                    b.setVisibility(View.INVISIBLE);
                     setCurrentFragment(profile, null, null);
                     break;
             }
