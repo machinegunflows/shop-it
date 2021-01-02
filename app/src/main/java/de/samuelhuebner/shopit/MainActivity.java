@@ -5,18 +5,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.ListFragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 ;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import de.samuelhuebner.shopit.database.Database;
 import de.samuelhuebner.shopit.history.HistoryFragment;
@@ -38,10 +37,16 @@ public class MainActivity extends AppCompatActivity {
     private Fragment currentFragment = null;
     private String currentFragmentId = "";
 
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        this.mAuth = FirebaseAuth.getInstance();
 
         this.lists = new ShoppingListsFragment();
         this.history = new HistoryFragment();
@@ -49,6 +54,13 @@ public class MainActivity extends AppCompatActivity {
 
         setupFragments();
         setupToolbar();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        this.currentUser = mAuth.getCurrentUser();
     }
 
     @Override
@@ -91,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
                 this.currentFragment = this.history;
                 break;
             case "profile":
-                this.currentFragment = new ProfileFragment();
+                this.profile = ProfileFragment.newInstance();
+                this.currentFragment = this.profile;
                 break;
             case "list":
                 String uuid = prefs.getString("ACTIVE_LIST_UUID", "");

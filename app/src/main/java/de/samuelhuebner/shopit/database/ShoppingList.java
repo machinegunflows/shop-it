@@ -1,6 +1,7 @@
 package de.samuelhuebner.shopit.database;
 
 import android.util.Log;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -31,7 +32,12 @@ public class ShoppingList {
     public void addPosition(ListPosition newPos) {
         positions.add(newPos);
 
-        isComplete = false;
+        isComplete = isComplete && newPos.isCompleted();
+    }
+
+    public void addPosition(ListPosition deletedListPos, int deletedPos) {
+        positions.add(deletedPos, deletedListPos);
+        isComplete = isComplete && deletedListPos.isCompleted();
     }
 
     public ArrayList<ListPosition> getPositions() {
@@ -70,5 +76,15 @@ public class ShoppingList {
         int sum = getItemCount() - getCompleted();
         isComplete = sum == 0;
         return isComplete;
+    }
+
+    public ListPosition removeListPosition(ListPosition position) {
+        for (int i = 0; i < positions.size(); i++) {
+            if (positions.get(i).getId() == position.getId()) {
+                positions.remove(i);
+                break;
+            }
+        }
+        return position;
     }
 }

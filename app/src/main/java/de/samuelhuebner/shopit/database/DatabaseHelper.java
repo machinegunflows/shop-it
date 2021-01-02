@@ -196,20 +196,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public void createPosition(ListPosition position) {
-        SQLiteDatabase db = getReadableDatabase();
-
-        ContentValues listPosVals = new ContentValues();
-//        db.insert()
-    }
-
     /**
      * deletes a shopping list given by its uuid
      *
      * @param uuid  The uuid of the shopping list that has to be deleted
      */
     public void deleteShoppingList(String uuid) {
-        SQLiteDatabase db = getReadableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + SHOPPING_LIST_TABLE_NAME + " WHERE " + SHOPPING_LIST_UUID_FIELD + "='" + uuid + "';");
         db.close();
     }
@@ -291,6 +284,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
 
         db.execSQL("DELETE FROM " + HISTORY_EVENT_TABLE_NAME);
+        db.close();
+    }
+
+    public void deleteListPosition(ListPosition position) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + LIST_POSITION_TABLE_NAME + " WHERE " + LIST_POSITION_ID_FIELD + "='" + position.getId() + "';");
+        db.close();
+    }
+
+    public void addBackListPosition(ListPosition deletedListPos, long id) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues val = new ContentValues();
+        val.put(LIST_POSITION_SHOPPING_LIST_ID_FIELD, deletedListPos.getListUuid());
+        val.put(LIST_POSITION_ID_FIELD, deletedListPos.getId());
+
+        long rowId = db.insert(LIST_POSITION_TABLE_NAME, null, val);
+
+        val = new ContentValues();
+        val.put(SHOPPING_ITEM_ID_FIELD, deletedListPos.getShoppingItem().getItemId());
+        val.put(SHOPPING_ITEM_LIST_POSITION_ID_FIELD, rowId);
+        val.put(SHOPPING_ITEM_NAME_FIELD, deletedListPos.getShoppingItem().getItemName());
+        val.put(SHOPPING_ITEM_CATEGORY_FIELD, deletedListPos.getShoppingItem().getCategory());
+        val.put(SHOPPING_ITEM_NOTES_FIELD, deletedListPos.getShoppingItem().getNotes());
+        val.put(SHOPPING_ITEM_URL_FIELD, deletedListPos.getShoppingItem().getItemUrl());
+
+        rowId = db.insert(SHOPPING_ITEM_TABLE_NAME, null, val);
+        deletedListPos.getShoppingItem().setId(rowId);
         db.close();
     }
 }

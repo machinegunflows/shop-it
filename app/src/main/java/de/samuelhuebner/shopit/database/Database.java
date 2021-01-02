@@ -123,4 +123,17 @@ public class Database {
         historyEvents.clear();
         this.dbHelper.deleteHistory();
     }
+
+    public void deleteListPosition(ListPosition position) {
+        ShoppingList list = map.get(position.getListUuid());
+        list.removeListPosition(position);
+        addHistoryEvent(new HistoryEvent("Deleted '" + position.getName() +"' from '" + list.getName() + "'", EventType.DELETED_POS));
+        this.dbHelper.deleteListPosition(position);
+    }
+
+    public void addListPosition(ListPosition deletedListPos, long id) {
+        addHistoryEvent(new HistoryEvent("Restored '" + deletedListPos.getName() + "'", EventType.RESTORED_POS));
+
+        this.dbHelper.addBackListPosition(deletedListPos, id);
+    }
 }

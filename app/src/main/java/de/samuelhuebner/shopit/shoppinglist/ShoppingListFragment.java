@@ -2,12 +2,19 @@ package de.samuelhuebner.shopit.shoppinglist;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +27,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
@@ -48,14 +58,27 @@ public class ShoppingListFragment extends Fragment {
     private Database db;
     private ShoppingList list;
 
+    // we need to keep those references to show the create window
     private ConstraintLayout layout;
     private CardView cardView;
     private RecyclerView recyclerView;
 
+    // all references needed for the background
+    private final ColorDrawable swipeBackground = new ColorDrawable(Color.parseColor("#FF0000"));
+    private Drawable deleteIcon;
+
+    // the adapter reference
     private ListPositionAdapter adapter;
 
+    // context variables
     private Context context;
     private MainActivity mainActivity;
+
+    /**
+     * These variables keep track of the previously deleted item so that the undo button works properly
+     */
+    private int deletedPos = -1;
+    private ListPosition deletedListPos = null;
 
     public ShoppingListFragment() {
         // Required empty public constructor
@@ -101,6 +124,7 @@ public class ShoppingListFragment extends Fragment {
         View newView = inflater.inflate(R.layout.fragment_shopping_list, container, false);
 
         this.context = newView.getContext();
+        this.deleteIcon = ContextCompat.getDrawable(getContext(), R.drawable.icon_deleted_pos);
 
         setupView(newView);
         setupSpinner(newView);
@@ -159,9 +183,52 @@ public class ShoppingListFragment extends Fragment {
         constraintSet.connect(R.id.shoppingPositionsListView, ConstraintSet.TOP, R.id.shoppingListToolbar, ConstraintSet.BOTTOM);
         constraintSet.applyTo(layout);
 
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                deletedPos = viewHolder.getAdapterPosition();
+                deletedListPos = list.getPositions().get(deletedPos);
+                db.deleteListPosition(deletedListPos);
+                adapter.notifyItemRemoved(deletedPos);
+
+                Snackbar.make(viewHolder.itemView, deletedListPos.getName() + " deleted.", Snackbar.LENGTH_LONG)
+                        .setAction("Undo", v -> {
+                            db.addListPosition(deletedListPos, deletedListPos.getId());
+                            list.addPosition(deletedListPos, deletedPos);
+                            adapter.notifyItemInserted(deletedPos);
+
+                            deletedListPos = null;
+                            deletedPos = -1;
+                        })
+                        .show();
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                View itemView = viewHolder.itemView;
+                int iconMargin = itemView.getHeight() - deleteIcon.getIntrinsicHeight() / 2;
+
+                swipeBackground.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                deleteIcon.setBounds(itemView.getRight() - iconMargin - deleteIcon.getIntrinsicWidth(),
+                        itemView.getTop() + iconMargin,
+                        itemView.getRight() - iconMargin,
+                        itemView.getBottom() - iconMargin);
+
+                swipeBackground.draw(c);
+                deleteIcon.draw(c);
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+
         recyclerView = view.findViewById(R.id.shoppingPositionsListView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
         recyclerView.setAdapter(this.adapter);
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
     }
 
     public void handleCreatePosEvent(View view) {

@@ -91,4 +91,8 @@ public class ShoppingItem {
     public void setId(long rowId) {
         this.id = rowId;
     }
+
+    public long getItemId() {
+        return this.id;
+    }
 }

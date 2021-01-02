@@ -10,5 +10,6 @@ public enum EventType {
     MARKED_AS_UNDONE,
     SHARED_ITEM,
     DELETED_LIST,
-    DELETED_POS
+    DELETED_POS,
+    RESTORED_POS
 }
