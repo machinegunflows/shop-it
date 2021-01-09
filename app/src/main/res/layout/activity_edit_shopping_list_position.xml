@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".shoppinglist.EditShoppingListPositionActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/editShoppingItemHeadingText"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tap here to\nadd an image"
+        android:textSize="10sp"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="@+id/itemImageView"
+        app:layout_constraintEnd_toEndOf="@+id/itemImageView"
+        app:layout_constraintBottom_toBottomOf="@+id/itemImageView"
+        app:layout_constraintStart_toStartOf="@+id/itemImageView"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="handleAddImageEvent"/>
+
+    <ImageView
+        android:id="@+id/itemImageView"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginStart="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/shoppingItemNameLayout"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/shoppingItemNameLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="270dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        app:helperText="Name"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/shoppingItemNameInput"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Spinner
+        android:id="@+id/categorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shoppingItemNameLayout"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/shoppingItemNotesLayout"
+        android:layout_width="349dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        app:helperText="Notes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/categorySpinner">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/shoppingItemNotes"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionDone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/shoppingItemLinkLayout"
+        android:layout_width="349dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        app:helperText="Link"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shoppingItemNotesLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/shoppingItemLinkInput"
+            android:inputType="textUri"
+            android:imeOptions="actionDone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/editListButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:icon="@drawable/ic_done_white_24dp"
+        android:text="@string/saveButtonText"
+        android:textColor="@android:color/white"
+        android:textAlignment="center"
+        app:backgroundTint="?attr/colorPrimary"
+        app:iconTint="@android:color/white"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:onClick="handleSavePosEvent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

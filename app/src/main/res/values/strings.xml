@@ -16,4 +16,5 @@
     <string name="clearButtonText">Clear</string>
     <string name="saveButtonText">Save</string>
     <string name="editHeadingText">Editing your list:</string>
+    <string name="editShoppingItemHeadingText">Edit a shopping item:</string>
 </resources>

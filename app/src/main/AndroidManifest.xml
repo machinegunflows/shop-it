@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShopIt">
+        <activity android:name=".shoppinglist.EditShoppingListPositionActivity"></activity>
         <activity
             android:name=".shoppinglist.EditShoppingListActivity"
             android:windowSoftInputMode="adjustResize" />

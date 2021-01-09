@@ -129,6 +129,8 @@ public class ShoppingListFragment extends Fragment {
 
         this.context = newView.getContext();
         this.deleteIcon = ContextCompat.getDrawable(getContext(), R.drawable.icon_deleted_pos);
+        this.adapter.setContext(context);
+        this.adapter.setFragment(this);
 
         setupView(newView);
         setupSpinner(newView);
@@ -173,6 +175,19 @@ public class ShoppingListFragment extends Fragment {
 
                     this.mainActivity.handleSwitchToAllEvent(getView());
                     break;
+                case R.id.shareMenuEntry:
+                    String shareText = list.getName() + ":";
+                    for (ListPosition pos : list.getPositions()) {
+                        shareText += "\n- " + pos.getName();
+                    }
+
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                    sendIntent.setType("text/plain");
+
+                    Intent shareIntent = Intent.createChooser(sendIntent, null);
+                    view.getContext().startActivity(shareIntent);
             }
 
             return true;
@@ -189,6 +204,14 @@ public class ShoppingListFragment extends Fragment {
         constraintSet.connect(R.id.shoppingPositionsListView, ConstraintSet.TOP, R.id.shoppingListToolbar, ConstraintSet.BOTTOM);
         constraintSet.applyTo(layout);
 
+        this.setupRecyclerView(view);
+    }
+
+    /**
+     * Sets up the recycler view (touch helper, click listeners)
+     * @param view
+     */
+    private void setupRecyclerView(View view) {
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -231,20 +254,49 @@ public class ShoppingListFragment extends Fragment {
             }
         };
 
+
         recyclerView = view.findViewById(R.id.shoppingPositionsListView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
         recyclerView.setAdapter(this.adapter);
         new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
+
+        recyclerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (!(requestCode == 801)) return;
+        if (!(requestCode == 801) && !(requestCode == 802)) return;
         if (!(resultCode == Activity.RESULT_OK)) return;
 
-        bar.setTitle(this.list.getName());
+        if (requestCode == 801) {
+            bar.setTitle(this.list.getName());
+        } else {
+            if (data != null) {
+                int viewPos = data.getIntExtra("VIEW_POS", 0);
+                String itemName = data.getStringExtra("ITEM_NAME");
+                String itemNotes = data.getStringExtra("ITEM_NOTES");
+                String itemUrl = data.getStringExtra("ITEM_URL");
+                String itemCategory = data.getStringExtra("ITEM_CATEGORY");
+
+                ListPosition listPosition = this.list.getPositions().get(viewPos);
+                listPosition.setName(itemName);
+                listPosition.getShoppingItem().setNotes(itemNotes);
+                listPosition.getShoppingItem().setItemUrl(itemUrl);
+                listPosition.getShoppingItem().setCategory(itemCategory);
+                db.savePosition(listPosition);
+                this.adapter.notifyItemChanged(viewPos);
+                HistoryEvent updatedEvent = new HistoryEvent("Updated " + listPosition.getName(), EventType.MODIFIED_POSITION );
+                db.addHistoryEvent(updatedEvent);
+            }
+        }
     }
 
     public void handleCreatePosEvent(View view) {

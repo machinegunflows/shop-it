@@ -324,4 +324,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update(SHOPPING_LIST_TABLE_NAME, values, SHOPPING_LIST_UUID_FIELD + "=?", new String[] {list.getUuid()});
         db.close();
     }
+
+    public void savePosition(ListPosition listPosition) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SHOPPING_ITEM_NAME_FIELD, listPosition.getShoppingItem().getItemName());
+        values.put(SHOPPING_ITEM_NOTES_FIELD, listPosition.getShoppingItem().getNotes());
+        values.put(SHOPPING_ITEM_URL_FIELD, listPosition.getShoppingItem().getItemUrl());
+        values.put(SHOPPING_ITEM_CATEGORY_FIELD, listPosition.getShoppingItem().getCategory());
+
+        db.update(SHOPPING_ITEM_TABLE_NAME, values, SHOPPING_ITEM_ID_FIELD + "=?", new String[] {String.valueOf(listPosition.getShoppingItem().getItemId())});
+        db.close();
+    }
 }

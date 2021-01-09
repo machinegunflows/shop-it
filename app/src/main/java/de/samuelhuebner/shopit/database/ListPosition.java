@@ -78,4 +78,9 @@ public class ListPosition {
     public long getId() {
         return this.id;
     }
+
+    public void setName(String name) {
+        this.name = name;
+        this.shoppingItem.setItemName(name);
+    }
 }

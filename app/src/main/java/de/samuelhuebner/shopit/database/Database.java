@@ -140,4 +140,8 @@ public class Database {
     public void updateList(ShoppingList list) {
         this.dbHelper.updateShoppingList(list);
     }
+
+    public void savePosition(ListPosition listPosition) {
+        this.dbHelper.savePosition(listPosition);
+    }
 }

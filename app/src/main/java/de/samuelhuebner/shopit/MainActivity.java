@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -170,9 +171,9 @@ public class MainActivity extends AppCompatActivity {
             case "history":
                 bottomNav.setSelectedItemId(R.id.historyViewMenuItem);
                 break;
-            case "profile":
-                bottomNav.setSelectedItemId(R.id.profileViewMenuItem);
-                break;
+//            case "profile":
+//                bottomNav.setSelectedItemId(R.id.profileViewMenuItem);
+//                break;
             default:
                 bottomNav.setSelectedItemId(R.id.listViewMenuItem);
                 break;
@@ -193,10 +194,10 @@ public class MainActivity extends AppCompatActivity {
                     b.setVisibility(View.INVISIBLE);
                     setCurrentFragment(history, null, null);
                     break;
-                case R.id.profileViewMenuItem:
+/*                case R.id.profileViewMenuItem:
                     b.setVisibility(View.INVISIBLE);
                     setCurrentFragment(profile, null, null);
-                    break;
+                    break;*/
             }
             return true;
         });

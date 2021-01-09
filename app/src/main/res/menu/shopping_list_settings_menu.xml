@@ -9,4 +9,7 @@
     <item
         android:title="Delete"
         android:id="@+id/deleteMenuEntry"/>
+    <item
+        android:title="Share"
+        android:id="@+id/shareMenuEntry"/>
 </menu>
