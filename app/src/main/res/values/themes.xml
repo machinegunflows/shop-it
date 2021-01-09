@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.ShopIt" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.ShopIt" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#417852</item>
         <item name="colorPrimaryVariant">#4a8a5e</item>
@@ -17,7 +17,7 @@
     </style>
 
     <!-- ToolBar -->
-    <style name="ToolBarStyle" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="ToolBarStyle" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:colorPrimary">#4a8a5e</item>
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
