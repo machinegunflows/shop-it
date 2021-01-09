@@ -9,7 +9,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/itemCardView"
         android:layout_width="400dp"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         app:cardElevation="2dp"
         app:cardCornerRadius="2dp"
@@ -37,19 +37,24 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 app:layout_constraintStart_toEndOf="@id/isCompletedCheckbox"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:srcCompat="@tools:sample/avatars" />
 
             <TextView
                 android:id="@+id/listNameText"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/placeholder"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:layout_marginTop="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginStart="19dp"
                 app:layout_constraintStart_toEndOf="@id/itemImageView"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toStartOf="@+id/shareButtonView"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.chip.Chip
@@ -59,8 +64,10 @@
                 android:text="@string/noCategoryText"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
                 app:layout_constraintTop_toBottomOf="@id/listNameText"
                 app:layout_constraintStart_toEndOf="@+id/itemImageView"
+                app:layout_constraintBottom_toBottomOf="parent"
                 />
 
             <Button

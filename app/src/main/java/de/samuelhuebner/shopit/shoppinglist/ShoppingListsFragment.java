@@ -28,6 +28,7 @@ import de.samuelhuebner.shopit.adapter.ShoppingListAdapter;
 import de.samuelhuebner.shopit.database.Database;
 import de.samuelhuebner.shopit.database.EventType;
 import de.samuelhuebner.shopit.database.HistoryEvent;
+import de.samuelhuebner.shopit.database.ListPosition;
 import de.samuelhuebner.shopit.database.ShoppingList;
 
 /**
@@ -135,10 +136,22 @@ public class ShoppingListsFragment extends Fragment {
             new MaterialAlertDialogBuilder(view.getContext())
                     .setTitle(listName.getText())
                     .setNeutralButton("Cancel", null)
-                    .setNegativeButton("Edit", (dialog, which) -> {
-                        Intent editListIntent = new Intent(getActivity(), EditShoppingListActivity.class);
-                        editListIntent.putExtra("LIST_UUID", this.db.getShoppingLists()[position].getUuid());
-                        startActivityForResult(editListIntent, 801);
+                    .setNegativeButton("Share", (dialog, which) -> {
+                        ShoppingList list = this.db.getShoppingLists()[position];
+                        String shareText = list.getName() + ":";
+                        for (ListPosition pos : list.getPositions()) {
+                            shareText += "\n- " + pos.getName();
+                        }
+
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+                        sendIntent.setType("text/plain");
+
+                        Intent shareIntent = Intent.createChooser(sendIntent, null);
+                        HistoryEvent shareEvent = new HistoryEvent("Shared " + list.getName() + ".", EventType.SHARED_LIST);
+                        db.addHistoryEvent(shareEvent);
+                        view.getContext().startActivity(shareIntent);
                     })
                     .setPositiveButton("Delete", ((dialog, which) -> {
                         ShoppingList deleted = db.getShoppingLists()[position];

@@ -186,6 +186,9 @@ public class ShoppingListFragment extends Fragment {
                     sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
                     sendIntent.setType("text/plain");
 
+                    HistoryEvent shareEvent = new HistoryEvent("Shared " + list.getName() + ".", EventType.SHARED_LIST);
+                    db.addHistoryEvent(shareEvent);
+
                     Intent shareIntent = Intent.createChooser(sendIntent, null);
                     view.getContext().startActivity(shareIntent);
             }

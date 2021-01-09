@@ -11,5 +11,6 @@ public enum EventType {
     SHARED_ITEM,
     DELETED_LIST,
     DELETED_POS,
-    RESTORED_POS
+    RESTORED_POS,
+    SHARED_LIST;
 }
