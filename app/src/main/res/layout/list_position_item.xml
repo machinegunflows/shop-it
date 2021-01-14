@@ -8,11 +8,12 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/itemCardView"
-        android:layout_width="400dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="1dp"
         app:cardElevation="2dp"
         app:cardCornerRadius="2dp"
+        app:layout_constrainedWidth="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
